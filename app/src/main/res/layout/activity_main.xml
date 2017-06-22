@@ -5,12 +5,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="cn.liu.castle.photosubscaleimageview.MainActivity">
+    tools:context="cn.liu.castle.photosubscaleimageview.activity.MainActivity">
 
     <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:transitionName="@string/single_transition_name"
+        android:id="@+id/single_small_iv"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

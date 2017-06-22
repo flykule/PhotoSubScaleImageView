@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">PhotoSubScaleImageView</string>
+
+    <string name="title_activity_fullscreen">FullscreenActivity</string>
+
+    <string name="single_transition_name">single_transition_name</string>
 </resources>
