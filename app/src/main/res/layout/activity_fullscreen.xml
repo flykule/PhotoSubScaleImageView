@@ -1,0 +1,12 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:background="#000"
+             tools:context="cn.liu.castle.photosubscaleimageview.FullscreenActivity">
+    <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+        android:id="@+id/full_screen_iv"
+        android:transitionName="@string/single_transition_name"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+</FrameLayout>
