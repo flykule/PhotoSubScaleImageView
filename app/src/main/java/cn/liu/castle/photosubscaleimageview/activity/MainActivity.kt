@@ -1,12 +1,16 @@
 package cn.liu.castle.photosubscaleimageview.activity
 
+import android.graphics.Rect
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.transition.ChangeImageTransform
+import android.util.Log
 import android.view.View
 import cn.liu.castle.photosubscaleimageview.AnimationUtil
 import cn.liu.castle.photosubscaleimageview.FullscreenActivity
 import cn.liu.castle.photosubscaleimageview.R
 import cn.liu.castle.photosubscaleimageview.R.id.single_small_iv
+import cn.liu.castle.photosubscaleimageview.transition.ChangeScaleImageTransform
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import org.jetbrains.anko.find
@@ -26,12 +30,17 @@ class MainActivity : AppCompatActivity() {
             setImage(ImageSource.resource(R.drawable.drawable_first))
             isZoomEnabled = false
             //点击单个小图时候的事件
-            onClick {
-                //通过使用Transition启动方式启动
-                val transitionOptions = AnimationUtil.transitionOptions(this@MainActivity, imageView,
-                        getString(R.string.single_transition_name))
-                startActivity(intentFor<FullscreenActivity>(), transitionOptions)
-            }
+
+        }
+        imageView.onClick {
+            //通过使用Transition启动方式启动
+            val transitionOptions = AnimationUtil.transitionOptions(this@MainActivity, imageView,
+                    getString(R.string.single_transition_name))
+            val bundle = Bundle()
+            ChangeScaleImageTransform.addExtraProperties(imageView,bundle)
+            val intent = intentFor<FullscreenActivity>()
+            intent.putExtra(getString(R.string.single_transition_name),bundle)
+            startActivity(intent, transitionOptions)
         }
 
     }

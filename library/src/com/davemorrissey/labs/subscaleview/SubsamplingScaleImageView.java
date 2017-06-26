@@ -1027,6 +1027,9 @@ public class SubsamplingScaleImageView extends View {
                                 setMatrixArray(dstArray, tile.vRect.left, tile.vRect.bottom, tile.vRect.left, tile.vRect.top, tile.vRect.right, tile.vRect.top, tile.vRect.right, tile.vRect.bottom);
                             }
                             matrix.setPolyToPoly(srcArray, 0, dstArray, 0, 4);
+                            if (mTransformMatrix != null) {
+                                matrix.preScale(1.1f, 1.f);
+                            }
                             canvas.drawBitmap(tile.bitmap, matrix, bitmapPaint);
                             if (debug) {
                                 canvas.drawRect(tile.vRect, debugPaint);
@@ -1057,6 +1060,9 @@ public class SubsamplingScaleImageView extends View {
             matrix.postRotate(getRequiredRotation());
             matrix.postTranslate(vTranslate.x, vTranslate.y);
 
+            if (mTransformMatrix != null) {
+                canvas.concat(mTransformMatrix);
+            }
             if (getRequiredRotation() == ORIENTATION_180) {
                 matrix.postTranslate(scale * sWidth, scale * sHeight);
             } else if (getRequiredRotation() == ORIENTATION_90) {
@@ -1064,9 +1070,9 @@ public class SubsamplingScaleImageView extends View {
             } else if (getRequiredRotation() == ORIENTATION_270) {
                 matrix.postTranslate(0, scale * sWidth);
             }
-            if (mTransformMatrix != null) {
-                matrix.preConcat(mTransformMatrix);
-            }
+            //if (mTransformMatrix != null) {
+            //    matrix.preConcat(mTransformMatrix);
+            //}
             if (tileBgPaint != null) {
                 if (sRect == null) {
                     sRect = new RectF();
@@ -2539,14 +2545,14 @@ public class SubsamplingScaleImageView extends View {
         return new AnimationBuilder(scale, sCenter);
     }
 
-    public void getDrawingBound(Rect outRect) {
+    public Rect getDrawingBound(Rect outRect) {
         //矩阵为空，使用View的Bounds
         if (matrix == null) {
             outRect.left = getLeft();
             outRect.right = getRight();
             outRect.top = getTop();
             outRect.bottom = getBottom();
-            return;
+            return outRect;
         }
         //获取实际显示的Bounds
         float[] floats = new float[9];
@@ -2557,6 +2563,7 @@ public class SubsamplingScaleImageView extends View {
         //屏幕上的图片右下角
         outRect.top = ((int) (scale * sWidth));
         outRect.bottom = ((int) (scale * sHeight) + getTop());
+        return outRect;
     }
 
     /**
@@ -3137,4 +3144,7 @@ public class SubsamplingScaleImageView extends View {
     }
 
 
+    public Matrix getScaleImageMatrix() {
+        return matrix;
+    }
 }
