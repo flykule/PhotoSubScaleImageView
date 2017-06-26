@@ -93,9 +93,10 @@ class ChangeScaleImageTransform : Transition {
         endValues.values[PROPNAME_BOUNDS] ?: return null
         val startBounds = startValues.values[PROPNAME_BOUNDS] as Rect
         val endBounds = endValues.values[PROPNAME_BOUNDS] as Rect
-        if (startBounds == null || endBounds == null) {
-            return null
-        }
+        //如果开始的图片比结束的图片大，则不会开启动画
+//        if (startBounds.width() <  endBounds.width() || startBounds.height() < endBounds.height()) {
+//            return null
+//        }
 
         var startMatrix: Matrix? = startValues.values[PROPNAME_MATRIX] as Matrix
         var endMatrix: Matrix? = endValues.values[PROPNAME_MATRIX] as Matrix

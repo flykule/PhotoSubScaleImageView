@@ -277,7 +277,10 @@ public class SubsamplingScaleImageView extends View {
 
     //The logical density of the display
     private float density;
-
+    /**
+     * 专用于变换的矩阵
+     */
+    private Matrix mTransformMatrix;
 
     public SubsamplingScaleImageView(Context context, AttributeSet attr) {
         super(context, attr);
@@ -1027,9 +1030,6 @@ public class SubsamplingScaleImageView extends View {
                                 setMatrixArray(dstArray, tile.vRect.left, tile.vRect.bottom, tile.vRect.left, tile.vRect.top, tile.vRect.right, tile.vRect.top, tile.vRect.right, tile.vRect.bottom);
                             }
                             matrix.setPolyToPoly(srcArray, 0, dstArray, 0, 4);
-                            if (mTransformMatrix != null) {
-                                matrix.preScale(1.1f, 1.f);
-                            }
                             canvas.drawBitmap(tile.bitmap, matrix, bitmapPaint);
                             if (debug) {
                                 canvas.drawRect(tile.vRect, debugPaint);
@@ -1060,9 +1060,6 @@ public class SubsamplingScaleImageView extends View {
             matrix.postRotate(getRequiredRotation());
             matrix.postTranslate(vTranslate.x, vTranslate.y);
 
-            if (mTransformMatrix != null) {
-                canvas.concat(mTransformMatrix);
-            }
             if (getRequiredRotation() == ORIENTATION_180) {
                 matrix.postTranslate(scale * sWidth, scale * sHeight);
             } else if (getRequiredRotation() == ORIENTATION_90) {
@@ -1070,9 +1067,6 @@ public class SubsamplingScaleImageView extends View {
             } else if (getRequiredRotation() == ORIENTATION_270) {
                 matrix.postTranslate(0, scale * sWidth);
             }
-            //if (mTransformMatrix != null) {
-            //    matrix.preConcat(mTransformMatrix);
-            //}
             if (tileBgPaint != null) {
                 if (sRect == null) {
                     sRect = new RectF();
@@ -1081,7 +1075,12 @@ public class SubsamplingScaleImageView extends View {
                 matrix.mapRect(sRect);
                 canvas.drawRect(sRect, tileBgPaint);
             }
-            canvas.drawBitmap(bitmap, matrix, bitmapPaint);
+            if (mTransformMatrix != null) {
+                canvas.drawBitmap(bitmap, mTransformMatrix, bitmapPaint);
+                mTransformMatrix = null;
+            } else {
+                canvas.drawBitmap(bitmap, matrix, bitmapPaint);
+            }
 
         }
 
@@ -2547,32 +2546,28 @@ public class SubsamplingScaleImageView extends View {
 
     public Rect getDrawingBound(Rect outRect) {
         //矩阵为空，使用View的Bounds
-        if (matrix == null) {
-            outRect.left = getLeft();
-            outRect.right = getRight();
-            outRect.top = getTop();
-            outRect.bottom = getBottom();
-            return outRect;
-        }
-        //获取实际显示的Bounds
-        float[] floats = new float[9];
-        matrix.getValues(floats);
-        //屏幕上的图片左上角
-        outRect.left = (int) floats[Matrix.MTRANS_X];
-        outRect.right = (int) floats[Matrix.MTRANS_Y];
-        //屏幕上的图片右下角
-        outRect.top = ((int) (scale * sWidth));
-        outRect.bottom = ((int) (scale * sHeight) + getTop());
+        //if (matrix == null) {
+        outRect.left = getLeft();
+        outRect.right = getRight();
+        outRect.top = getTop();
+        outRect.bottom = getBottom();
         return outRect;
+        //}
+        ////获取实际显示的Bounds
+        //float[] floats = new float[9];
+        //matrix.getValues(floats);
+        ////屏幕上的图片左上角
+        //outRect.left = (int) floats[Matrix.MTRANS_X];
+        //outRect.right = (int) floats[Matrix.MTRANS_Y];
+        ////屏幕上的图片右下角
+        //outRect.top = ((int) (scale * sWidth));
+        //outRect.bottom = ((int) (scale * sHeight) + getTop());
+        //return outRect;
     }
 
     /**
-     * 专用于变换的矩阵
-     */
-    private Matrix mTransformMatrix;
-
-    /**
      * 用于实现图片缩放的矩阵变换， 在Transition的时候使用
+     *
      * @param matrix 要Concat的矩阵
      */
     public void animateTransform(Matrix matrix) {
@@ -2583,6 +2578,16 @@ public class SubsamplingScaleImageView extends View {
         invalidate();
     }
 
+    public Matrix getScaleImageMatrix() {
+        if (matrix == null) {
+            matrix = new Matrix();
+            matrix.reset();
+            matrix.postScale(scale, scale);
+            matrix.postRotate(getRequiredRotation());
+            //matrix.postTranslate(vTranslate.x, vTranslate.y);
+        }
+        return matrix;
+    }
 
     /**
      * An event listener for animations, allows events to be triggered when an animation completes,
@@ -3141,10 +3146,5 @@ public class SubsamplingScaleImageView extends View {
             invalidate();
         }
 
-    }
-
-
-    public Matrix getScaleImageMatrix() {
-        return matrix;
     }
 }

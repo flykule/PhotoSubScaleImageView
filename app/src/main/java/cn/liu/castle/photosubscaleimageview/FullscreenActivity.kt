@@ -7,6 +7,8 @@ import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import org.jetbrains.anko.find
 import android.content.Intent
+import android.graphics.BitmapFactory
+import android.os.SystemClock
 import android.support.v4.app.ActivityCompat.setEnterSharedElementCallback
 import android.view.View
 
@@ -25,7 +27,7 @@ class FullscreenActivity : AppCompatActivity() {
         postponeEnterTransition()
         mScaleImageView.apply {
             transitionName = getString(cn.liu.castle.photosubscaleimageview.R.string.single_transition_name)
-            setImage(ImageSource.resource(R.drawable.drawable_first))
+            setImage(ImageSource.bitmap(BitmapFactory.decodeResource(resources,R.drawable.drawable_first)))
             //等待加载完成再跳转
         }
         setEnterSharedElementCallback(object : SharedElementCallback() {
@@ -49,9 +51,9 @@ class FullscreenActivity : AppCompatActivity() {
                 }
             }
         })
-        mScaleImageView.post { startPostponedEnterTransition() }
-
-
+        mScaleImageView.viewTreeObserver.addOnGlobalLayoutListener {
+            mScaleImageView.post { startPostponedEnterTransition() }
+        }
     }
 
 }

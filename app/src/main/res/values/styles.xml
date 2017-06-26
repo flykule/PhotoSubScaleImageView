@@ -28,7 +28,7 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowSharedElementEnterTransition">@transition/big_image_enter</item>
-        <item name="android:windowSharedElementExitTransition">@transition/big_image_enter</item>
+        <item name="android:windowSharedElementExitTransition">@transition/big_image_exit</item>
     </style>
 
 </resources>
