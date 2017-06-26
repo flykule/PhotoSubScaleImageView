@@ -2546,23 +2546,19 @@ public class SubsamplingScaleImageView extends View {
 
     public Rect getDrawingBound(Rect outRect) {
         //矩阵为空，使用View的Bounds
-        //if (matrix == null) {
-        outRect.left = getLeft();
-        outRect.right = getRight();
-        outRect.top = getTop();
-        outRect.bottom = getBottom();
+        if (matrix == null) {
+            matrix = getScaleImageMatrix();
+        }
+        //获取实际显示的Bounds
+        float[] floats = new float[9];
+        matrix.getValues(floats);
+        //屏幕上的图片左上角
+        outRect.left = (int) floats[Matrix.MTRANS_X];
+        outRect.right = (int) floats[Matrix.MTRANS_Y];
+        //屏幕上的图片右下角
+        outRect.top = ((int) (scale * sWidth));
+        outRect.bottom = ((int) (scale * sHeight) + getTop());
         return outRect;
-        //}
-        ////获取实际显示的Bounds
-        //float[] floats = new float[9];
-        //matrix.getValues(floats);
-        ////屏幕上的图片左上角
-        //outRect.left = (int) floats[Matrix.MTRANS_X];
-        //outRect.right = (int) floats[Matrix.MTRANS_Y];
-        ////屏幕上的图片右下角
-        //outRect.top = ((int) (scale * sWidth));
-        //outRect.bottom = ((int) (scale * sHeight) + getTop());
-        //return outRect;
     }
 
     /**
@@ -2582,9 +2578,10 @@ public class SubsamplingScaleImageView extends View {
         if (matrix == null) {
             matrix = new Matrix();
             matrix.reset();
-            matrix.postScale(scale, scale);
-            matrix.postRotate(getRequiredRotation());
-            //matrix.postTranslate(vTranslate.x, vTranslate.y);
+            matrix.setScale(scale, scale);
+            matrix.setRotate(getRequiredRotation());
+            fitToBounds(true);
+            matrix.setTranslate(vTranslate.x, vTranslate.y);
         }
         return matrix;
     }
